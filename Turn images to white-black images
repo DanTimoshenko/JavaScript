@@ -1,0 +1,24 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from PIL import Image
+
+# Завантажуємо тестове зображення
+image_path = 'я.jpg'  # Вкажіть шлях до вашого зображення
+image = Image.open(image_path)
+
+# Перетворюємо зображення в чорно-біле (якщо потрібно)
+gray_image = image.convert('L')
+
+# Перетворюємо зображення в масив пікселів
+pixel_data = np.array(gray_image)
+
+# Створюємо гістограму
+plt.hist(pixel_data.flatten(), bins=256, color='gray', alpha=0.7)
+
+# Додаємо підписи до осей та заголовок
+plt.title('Гістограма для тестового зображення')
+plt.xlabel('Яскравість пікселів')
+plt.ylabel('Кількість пікселів')
+
+# Виводимо гістограму
+plt.show()

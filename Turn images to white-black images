@@ -1,24 +1,49 @@
+import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from PIL import Image
 
-# Завантажуємо тестове зображення
-image_path = 'я.jpg'  # Вкажіть шлях до вашого зображення
-image = Image.open(image_path)
+# Завантаження зображення
+image_path = 'D:/JAVASCRIPT/miquella.jpg'  
+image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
-# Перетворюємо зображення в чорно-біле (якщо потрібно)
-gray_image = image.convert('L')
+if image is None:
+    print("Помилка завантаження зображення!")
+else:
+    # Побудова таблиці пошуку для створення негативу
+    lookup_table = np.array([255 - i for i in range(256)], dtype=np.uint8)
+    
+    # Створення негативу
+    negative_image = cv2.LUT(image, lookup_table)
 
-# Перетворюємо зображення в масив пікселів
-pixel_data = np.array(gray_image)
+    # Побудова гістограм
+    def plot_histogram(image, title, color):
+        hist = cv2.calcHist([image], [0], None, [256], [0, 256])
+        plt.plot(hist, color=color)
+        plt.title(title)
+        plt.xlabel("Яскравість")
+        plt.ylabel("Кількість пікселів")
 
-# Створюємо гістограму
-plt.hist(pixel_data.flatten(), bins=256, color='gray', alpha=0.7)
+    # Відображення результатів
+    plt.figure(figsize=(12, 6))
+    
+    # Оригінальне зображення та його гістограма
+    plt.subplot(2, 2, 1)
+    plt.imshow(image)
+    plt.title("Оригінальне зображення")
+    plt.axis('off')
 
-# Додаємо підписи до осей та заголовок
-plt.title('Гістограма для тестового зображення')
-plt.xlabel('Яскравість пікселів')
-plt.ylabel('Кількість пікселів')
+    plt.subplot(2, 2, 2)
+    plot_histogram(image, "Гістограма оригінального зображення", color='blue')
 
-# Виводимо гістограму
-plt.show()
+    # Негатив зображення та його гістограма
+    plt.subplot(2, 2, 3)
+    plt.imshow(negative_image, cmap='gray')
+    plt.title("Негатив зображення")
+    plt.axis('off')
+
+    plt.subplot(2, 2, 4)
+    plot_histogram(negative_image, "Гістограма негативу", color='red')
+
+    plt.tight_layout()
+    plt.show()
+
